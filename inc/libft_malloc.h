@@ -1,22 +1,40 @@
 #ifndef LIBFT_MALLOC_H
 #define LIBFT_MALLOC_H
 
-#include <stdlib.h>
+// TODO: check memory alignment
 
-typedef struct s_zone
+#include <stdlib.h>
+#include <sys/mman.h>
+#include <sys/resource.h>
+#include <unistd.h>
+
+typedef struct zone_s
 {
-	int type;
+	int type; // check if necessary
 	size_t size;
 	size_t free_size;
-	// nb blocks => maybe useless because to check if empty we can compare
-	// if size == free_size
-} t_zone;
+	struct zone_s* previous;
+	struct zone_s* next;
+} zone_t;
 
-typedef struct s_block
+typedef struct block_s
 {
 	size_t size;
 	int is_free;
-} t_block;
+	struct block_s* previous;
+	struct block_s* next;
+} block_t;
+
+#define TINY_ZONE_SIZE (getpagesize() * 4)
+#define TINY_BLOCK_MAX_SIZE ((TINY_ZONE_SIZE - sizeof(zone_t) - (sizeof(block_t) * 100)) / 100)
+
+#define SMALL_ZONE_SIZE (getpagesize() * 16)
+#define SMALL_BLOCK_MAX_SIZE ((SMALL_ZONE_SIZE - sizeof(zone_t) - (sizeof(block_t) * 100)) / 100)
+
+#define MD_ZONE_SIZE sizeof(zone_t)
+#define MD_BLOCK_SIZE sizeof(block_t)
+
+void* heap_g = NULL;
 
 void* malloc(size_t size);
 void* realloc(void* ptr, size_t size);
