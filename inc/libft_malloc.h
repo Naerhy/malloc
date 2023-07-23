@@ -37,9 +37,9 @@ typedef struct block_s
 void* heap_g = NULL;
 
 void* malloc(size_t size);
-void* realloc(void* ptr, size_t size);
-void free(void* ptr);
+//void* realloc(void* ptr, size_t size);
+//void free(void* ptr);
 
-void show_alloc_mem(void);
+//void show_alloc_mem(void);
 
 #endif
