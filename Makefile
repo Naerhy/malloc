@@ -3,6 +3,7 @@ ifeq ($(HOSTTYPE),)
 endif
 
 NAME = libft_malloc_$(HOSTTYPE).so
+LINK_NAME = libft_malloc.so
 
 SRC_DIR = src
 OBJ_DIR = obj
@@ -21,6 +22,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 
 $(NAME): $(OBJ)
 	$(CC) -shared -o $@ $^
+	ln -s $(NAME) $(LINK_NAME)
 
 $(OBJ_DIR):
 	mkdir -p $@
@@ -31,7 +33,7 @@ clean:
 	$(RM) $(OBJ)
 
 fclean: clean
-	$(RM) $(NAME)
+	$(RM) $(NAME) $(LINK_NAME)
 
 re: fclean all
 
