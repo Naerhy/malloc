@@ -1,0 +1,5 @@
+obj
+
+*.so
+tests/*.o
+tests/malloc_test
