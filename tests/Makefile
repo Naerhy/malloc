@@ -15,7 +15,7 @@ RM = rm -rf
 
 $(NAME): $(OBJ)
 	$(MAKE) -C ..
-	$(CC) -L.. -l$(LIB) -o $@ $^
+	$(CC) -o $@ $^ -L.. -l$(LIB)
 
 all: $(NAME)
 
