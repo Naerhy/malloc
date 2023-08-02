@@ -1,9 +1,9 @@
 #ifndef LIBFT_MALLOC_H
 #define LIBFT_MALLOC_H
 
-// TODO: check memory alignment
+// TODO check memory alignment
+// TODO rename malloc function to definitive naming
 
-#include <stdlib.h>
 #include <sys/mman.h>
 #include <sys/resource.h>
 #include <unistd.h>
@@ -34,12 +34,14 @@ typedef struct block_s
 #define MD_ZONE_SIZE sizeof(zone_t)
 #define MD_BLOCK_SIZE sizeof(block_t)
 
-void* heap_g = NULL;
+extern void* heap_g;
 
-void* malloc(size_t size);
+void* temp_malloc(size_t size);
 //void* realloc(void* ptr, size_t size);
 //void free(void* ptr);
 
 //void show_alloc_mem(void);
+
+size_t align_size(size_t size);
 
 #endif
