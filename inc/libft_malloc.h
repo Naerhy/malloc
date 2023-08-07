@@ -8,6 +8,8 @@
 #include <sys/resource.h>
 #include <unistd.h>
 
+typedef struct rlimit rlimit_t;
+
 typedef struct zone_s
 {
 	int type; // check if necessary
@@ -40,8 +42,11 @@ void* temp_malloc(size_t size);
 //void* realloc(void* ptr, size_t size);
 //void free(void* ptr);
 
-//void show_alloc_mem(void);
+void show_alloc_mem(void);
 
 size_t align_size(size_t size);
+size_t get_heap_size(void);
+void* get_last_zone(void);
+size_t get_total_size(void);
 
 #endif

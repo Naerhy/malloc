@@ -5,13 +5,12 @@ int main(void)
 {
 	char* zone;
 
-	zone = temp_malloc(4 * sizeof(char));
+	zone = temp_malloc(1000 * sizeof(char));
 	if (!zone)
 	{
 		printf("malloc is NULL\n");
 		return 1;
 	}
-	for (int i = 0; i < 50; i++)
-		printf("%d\n", *(zone + i));
+	show_alloc_mem();
 	return 0;
 }

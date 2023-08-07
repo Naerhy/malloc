@@ -1,11 +1,5 @@
 #include "libft_malloc.h"
 
-// if size > SMALL_BLOCK_MAX_SIZE
-//   check memory limit (getrlimit)
-//     if > limit return NULL
-// else if size > TINY_BLOCK_MAX_SIZE
-// else
-
 // TODO remove include
 #include <stdio.h>
 
@@ -13,17 +7,15 @@ void* heap_g = NULL;
 
 void* temp_malloc(size_t size)
 {
-	//void* new_zone;
-	struct rlimit limit;
+	void* new_zone;
+	//void* last_zone;
+	rlimit_t limits;
 
-	if (getrlimit(RLIMIT_AS, &limit) == -1)
-	{
-		printf("getrlimit error\n");
+	size = align_size(size);
+	if (getrlimit(RLIMIT_AS, &limits) == -1
+			|| get_heap_size() + MD_ZONE_SIZE + MD_BLOCK_SIZE + size > limits.rlim_cur)
 		return NULL;
-	}
-	printf("%lu - %lu\n", limit.rlim_cur, limit.rlim_max);
-	printf("original size = %lu | aligned size = %lu\n", size, align_size(size));
-	/*(if (size > SMALL_BLOCK_MAX_SIZE)
+	if (size > SMALL_BLOCK_MAX_SIZE)
 	{
 		new_zone = mmap(NULL, size + MD_ZONE_SIZE + MD_BLOCK_SIZE, PROT_READ | PROT_WRITE,
 				MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
@@ -38,7 +30,14 @@ void* temp_malloc(size_t size)
 		((block_t*)((zone_t*)new_zone + 1))->is_free = 0;
 		((block_t*)((zone_t*)new_zone + 1))->previous = NULL;
 		((block_t*)((zone_t*)new_zone + 1))->next = NULL;
+		/*last_zone = get_last_zone();
+		if (!last_zone)
+			heap_g = new_zone;
+		else
+			((zone_t*)last_zone)->next = new_zone;
+		return (char*)new_zone + MD_ZONE_SIZE + MD_BLOCK_SIZE;*/
+		heap_g = new_zone;
+		return new_zone;
 	}
-	return new_zone;*/
 	return NULL;
 }
