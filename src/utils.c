@@ -1,50 +1,95 @@
 #include "libft_malloc.h"
 
-size_t align_size(size_t size)
+size_t get_next_mult(size_t x, size_t mult)
 {
-	return (((size - 1) >> 2) << 2) + 4;
+	return (x - 1) / mult * mult + mult;
 }
 
-size_t get_heap_size(void)
+zone_t* init_zone(int type, size_t size)
 {
-	size_t size;
+	zone_t* zone;
 
-	size = 0;
-	while (heap_g)
+	zone = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON, -1, 0);
+	if (zone == MAP_FAILED)
+		return NULL;
+	zone->type = type;
+	zone->size = size - METADATA_ZONE_SIZE;
+	zone->free_size = zone->size;
+	zone->previous = NULL;
+	zone->next = NULL;
+	return zone;
+}
+
+void init_block(zone_t* zone, block_t* block, size_t size, block_t* previous_block)
+{
+	block->size = size;
+	block->is_free = 0;
+	block->previous = previous_block;
+	block->next = NULL;
+	if (previous_block)
+		previous_block->next = block;
+	zone->free_size -= size + METADATA_BLOCK_SIZE;
+}
+
+block_t* first_fit(size_t size, int type)
+{
+	zone_t* zone;
+	block_t* block;
+	block_t* last_block;
+
+	zone = heap_g;
+	while (zone)
 	{
-		size += ((zone_t*)heap_g)->size;
-		heap_g = ((zone_t*)heap_g)->next;
-	}
-	return size;
-}
-
-void* get_last_zone(void)
-{
-	void* temp;
-
-	temp = heap_g;
-	while (((zone_t*)temp)->next)
-		temp = ((zone_t*)temp)->next;
-	return temp;
-}
-
-size_t get_total_size(void)
-{
-	void* temp;
-	void* temp2;
-	size_t size;
-
-	size = 0;
-	temp = heap_g;
-	while (temp)
-	{
-		temp2 = (char*)temp + MD_ZONE_SIZE;
-		while (temp2)
+		if (zone->type == type && zone->free_size >= size + METADATA_BLOCK_SIZE)
 		{
-			size += ((block_t*)temp2)->size;
-			temp2 = ((block_t*)temp2)->next;
+			block = (block_t*)(zone + 1);
+			while (block)
+			{
+				if (block->is_free && block->size >= size)
+				{
+					block->is_free = 0;
+					return block;
+				}
+				block = block->next;
+			}
+			if (get_remaining_space(zone) >= size + METADATA_BLOCK_SIZE)
+			{
+				last_block = get_last_block((block_t*)(zone + 1));
+				init_block(zone, (block_t*)((char*)(last_block + 1) + last_block->size), size, last_block);
+				return (block_t*)((char*)(last_block + 1) + last_block->size);
+			}
 		}
-		temp = ((zone_t*)temp)->next;
+		zone = zone->next;
 	}
-	return size;
+	return NULL;
+}
+
+size_t get_remaining_space(zone_t* zone)
+{
+	block_t* last_block;
+	char* start;
+	char* end;
+
+	last_block = get_last_block((block_t*)(zone + 1));
+	start = (char*)(last_block + 1) + last_block->size;
+	end = (char*)(zone + 1) + zone->size;
+	return end - start;
+}
+
+zone_t* get_last_zone(zone_t* zone)
+{
+	if (!zone)
+		return NULL;
+	while (zone->next)
+		zone = zone->next;
+	return zone;
+}
+
+block_t* get_last_block(block_t* block)
+{
+	if (!block)
+		return NULL;
+	while (block->next)
+		block = block->next;
+	return block;
 }

@@ -1,33 +1,20 @@
 #include "libft_malloc.h"
 
-// TODO remove include and use own printf
-#include <stdio.h>
-
 void show_alloc_mem(void)
 {
-	void* temp;
-	void* temp2;
-	void* first_byte;
-	void* last_byte;
+	zone_t* zone;
+	block_t* block;
 
-	temp = heap_g;
-	while (temp)
+	zone = heap_g;
+	while (zone)
 	{
-		if (((zone_t*)temp)->type == 1)
-			printf("TINY: %p\n", (char*)temp + MD_ZONE_SIZE);
-		else if (((zone_t*)temp)->type == 1)
-			printf("SMALL: %p\n", (char*)temp + MD_ZONE_SIZE);
-		else
-			printf("LARGE: %p\n", (char*)temp + MD_ZONE_SIZE);
-		temp2 = (char*)temp + MD_ZONE_SIZE;
-		while (temp2)
+		printf("%s : %p\n", (zone->type == 1) ? "TINY" : (zone->type == 2) ? "SMALL" : "LARGE", zone + 1);
+		block = (block_t*)(zone + 1);
+		while (block)
 		{
-			first_byte = (char*)temp2 + MD_BLOCK_SIZE;
-			last_byte = (char*)temp2 + MD_BLOCK_SIZE + ((block_t*)temp2)->size;
-			printf("%p - %p: %lu bytes\n", first_byte, last_byte, last_byte - first_byte);
-			temp2 = ((block_t*)temp2)->next;
+			printf("%p - %p : %zu bytes\n", block + 1, (char*)(block + 1) + block->size, block->size);
+			block = block->next;
 		}
-		temp = ((zone_t*)temp)->next;
-		printf("Total: %lu\n", get_total_size());
+		zone = zone->next;
 	}
 }

@@ -1,43 +1,94 @@
 #include "libft_malloc.h"
 
-// TODO remove include
-#include <stdio.h>
-
 void* heap_g = NULL;
+
+static zone_t* allocate_new_zone(int type, size_t zone_size, size_t block_size)
+{
+	zone_t* new_zone;
+
+	new_zone = init_zone(type, zone_size);
+	if (!new_zone)
+		return NULL;
+	init_block(new_zone, (block_t*)(new_zone + 1), block_size, NULL);
+	if (!heap_g)
+		heap_g = (void*)new_zone;
+	else
+		(get_last_zone(heap_g))->next = new_zone;
+	return new_zone;
+}
 
 void* temp_malloc(size_t size)
 {
-	void* new_zone;
-	//void* last_zone;
-	rlimit_t limits;
+	zone_t* new_zone;
+	block_t* existing_block;
+	int type;
 
-	size = align_size(size);
-	if (getrlimit(RLIMIT_AS, &limits) == -1
-			|| get_heap_size() + MD_ZONE_SIZE + MD_BLOCK_SIZE + size > limits.rlim_cur)
+	if (!size)
 		return NULL;
-	if (size > SMALL_BLOCK_MAX_SIZE)
+	size = get_next_mult(size, 8);
+	if (size > SMALL_BLOCK_MAXSIZE)
 	{
-		new_zone = mmap(NULL, size + MD_ZONE_SIZE + MD_BLOCK_SIZE, PROT_READ | PROT_WRITE,
-				MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+		new_zone = allocate_new_zone(3, size + METADATA_ZONE_SIZE + METADATA_BLOCK_SIZE, size);
+		return (!new_zone) ? NULL : (void*)((block_t*)(new_zone + 1) + 1);
+	}
+	else
+	{
+		type = (size <= TINY_BLOCK_MAXSIZE) ? 1 : 2;
+		existing_block = first_fit(size, type);
+		if (existing_block)
+			return (void*)(existing_block + 1);
+		else
+		{
+			new_zone = allocate_new_zone(type, (type == 1) ? TINY_ZONE_SIZE : SMALL_ZONE_SIZE, size);
+			return (!new_zone) ? NULL : (void*)((block_t*)(new_zone + 1) + 1);
+		}
+	}
+}
+
+/*
+void* temp_malloc(size_t size)
+{
+	zone_t* new_zone;
+	block_t* existing_block;
+	int type;
+	// rlimit_t limits;
+
+	if (!size)
+		return NULL;
+	size = get_next_mult(size, 8);
+	// if (getrlimit(RLIMIT_AS, &limits) == -1
+			// || get_heap_size() + MDZ_S + MDB_S + size > limits.rlim_cur)
+		// return NULL;
+	if (size > SMALL_BLOCK_MAXSIZE)
+	{
+		new_zone = init_zone(3, size + METADATA_ZONE_SIZE + METADATA_BLOCK_SIZE);
 		if (!new_zone)
 			return NULL;
-		((zone_t*)new_zone)->type = 3;
-		((zone_t*)new_zone)->size = size + MD_BLOCK_SIZE;
-		((zone_t*)new_zone)->free_size = ((zone_t*)new_zone)->size;
-		((zone_t*)new_zone)->previous = NULL;
-		((zone_t*)new_zone)->next = NULL;
-		((block_t*)((zone_t*)new_zone + 1))->size = size;
-		((block_t*)((zone_t*)new_zone + 1))->is_free = 0;
-		((block_t*)((zone_t*)new_zone + 1))->previous = NULL;
-		((block_t*)((zone_t*)new_zone + 1))->next = NULL;
-		/*last_zone = get_last_zone();
-		if (!last_zone)
-			heap_g = new_zone;
+		init_block(new_zone, (block_t*)(new_zone + 1), size, NULL);
+		if (!heap_g)
+			heap_g = (void*)new_zone;
 		else
-			((zone_t*)last_zone)->next = new_zone;
-		return (char*)new_zone + MD_ZONE_SIZE + MD_BLOCK_SIZE;*/
-		heap_g = new_zone;
-		return new_zone;
+			(get_last_zone(heap_g))->next = new_zone;
+		return (void*)((block_t*)(new_zone + 1) + 1);
 	}
-	return NULL;
+	else
+	{
+		type = (size <= TINY_BLOCK_MAXSIZE) ? 1 : 2;
+		existing_block = first_fit(size, type);
+		if (existing_block)
+			return (void*)(existing_block + 1);
+		else
+		{
+			new_zone = init_zone(type, (type == 1) ? TINY_ZONE_SIZE : SMALL_ZONE_SIZE);
+			if (!new_zone)
+				return NULL;
+			init_block(new_zone, (block_t*)(new_zone + 1), size, NULL);
+			if (!heap_g)
+				heap_g = (void*)new_zone;
+			else
+				(get_last_zone(heap_g))->next = new_zone;
+			return (void*)((block_t*)(new_zone + 1) + 1);
+		}
+	}
 }
+*/
