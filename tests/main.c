@@ -53,5 +53,29 @@ int main(void)
 	show_alloc_mem();
 	printf("=====================\n");
 
+	temp_realloc(a, 0);
+	temp_realloc(b, 0);
+	temp_realloc(e, 0);
+
+	printf("=====================\n");
+	show_alloc_mem();
+	printf("=====================\n");
+
+	a = temp_realloc(NULL, 120);
+	b = temp_realloc(NULL, 4500);
+	c = temp_realloc(NULL, 80);
+
+	printf("=====================\n");
+	show_alloc_mem();
+	printf("=====================\n");
+
+	temp_free(a);
+	temp_free(b);
+	temp_realloc(NULL, 110);
+
+	printf("=====================\n");
+	show_alloc_mem();
+	printf("=====================\n");
+
 	return 0;
 }

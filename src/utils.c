@@ -104,3 +104,15 @@ block_t* get_last_block(block_t* block)
 		block = block->next;
 	return block;
 }
+
+void* cst_memcpy(void* dest, void const* src, size_t n)
+{
+	unsigned char* udest;
+	unsigned char const* usrc;
+
+	udest = dest;
+	usrc = src;
+	for (size_t i = 0; i < n; i++)
+		*(udest + i) = *(usrc + i);
+	return dest;
+}

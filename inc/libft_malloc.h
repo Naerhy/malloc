@@ -11,6 +11,7 @@
 
 // TODO: set const keyword to unmodified variables
 // TODO: remove useless previous variable from structures?
+// TODO: handle errno values in my implementations
 
 #include <sys/mman.h>
 #include <sys/resource.h>
@@ -47,7 +48,7 @@ typedef struct block_s
 extern void* heap_g;
 
 void* temp_malloc(size_t size);
-//void* realloc(void* ptr, size_t size);
+void* temp_realloc(void* ptr, size_t size);
 void temp_free(void* ptr);
 void show_alloc_mem(void);
 
@@ -59,6 +60,7 @@ size_t get_remaining_space(zone_t* zone);
 zone_t* get_last_zone(zone_t* zone);
 block_t* get_first_block(block_t* block);
 block_t* get_last_block(block_t* block);
+void* cst_memcpy(void* dest, void const* src, size_t n);
 // size_t get_heap_size(void);
 // size_t get_total_size(void);
 
