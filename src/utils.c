@@ -48,6 +48,7 @@ block_t* first_fit(size_t size, int type)
 				if (block->is_free && block->size >= size)
 				{
 					block->is_free = 0;
+					zone->free_size -= size + METADATA_BLOCK_SIZE;
 					return block;
 				}
 				block = block->next;
