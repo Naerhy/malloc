@@ -15,7 +15,9 @@ RM = rm -rf
 
 $(NAME): $(OBJ)
 	$(MAKE) -C ..
-	$(CC) -o $@ $^ -L.. -l$(LIB)
+	# either export LD_LIBRARY_PATH or set library path with -rpath
+	# $(CC) -o $@ $^ -L.. -l$(LIB)
+	$(CC) -o $@ $^ -L.. -l$(LIB) -Wl,-rpath,$(PWD)/..
 
 all: $(NAME)
 

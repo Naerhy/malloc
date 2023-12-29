@@ -48,7 +48,7 @@ extern void* heap_g;
 
 void* temp_malloc(size_t size);
 //void* realloc(void* ptr, size_t size);
-//void free(void* ptr);
+void temp_free(void* ptr);
 void show_alloc_mem(void);
 
 size_t get_next_mult(size_t x, size_t mult);
@@ -57,6 +57,7 @@ void init_block(zone_t* zone, block_t* block, size_t size, block_t* previous_blo
 block_t* first_fit(size_t size, int type);
 size_t get_remaining_space(zone_t* zone);
 zone_t* get_last_zone(zone_t* zone);
+block_t* get_first_block(block_t* block);
 block_t* get_last_block(block_t* block);
 // size_t get_heap_size(void);
 // size_t get_total_size(void);

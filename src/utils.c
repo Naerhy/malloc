@@ -86,6 +86,15 @@ zone_t* get_last_zone(zone_t* zone)
 	return zone;
 }
 
+block_t* get_first_block(block_t* block)
+{
+	if (!block)
+		return NULL;
+	while (block->previous)
+		block = block->previous;
+	return block;
+}
+
 block_t* get_last_block(block_t* block)
 {
 	if (!block)
