@@ -20,14 +20,14 @@ zone_t* init_zone(int type, size_t size)
 	return zone;
 }
 
-void init_block(zone_t* zone, block_t* block, size_t size, block_t* previous_block)
+void init_block(zone_t* zone, block_t* block, size_t size, block_t* previous)
 {
 	block->size = size;
 	block->is_free = 0;
-	block->previous = previous_block;
+	block->previous = previous;
 	block->next = NULL;
-	if (previous_block)
-		previous_block->next = block;
+	if (previous)
+		previous->next = block;
 	zone->free_size -= size + METADATA_BLOCK_SIZE;
 }
 
@@ -55,7 +55,8 @@ block_t* first_fit(size_t size, int type)
 			if (get_remaining_space(zone) >= size + METADATA_BLOCK_SIZE)
 			{
 				last_block = get_last_block((block_t*)(zone + 1));
-				init_block(zone, (block_t*)((char*)(last_block + 1) + last_block->size), size, last_block);
+				init_block(zone, (block_t*)((char*)(last_block + 1) + last_block->size),
+						size, last_block);
 				return (block_t*)((char*)(last_block + 1) + last_block->size);
 			}
 		}
