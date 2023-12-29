@@ -3,49 +3,55 @@
 
 int main(void)
 {
-	char* str;
-	char* temp_1;
-	char* temp_2;
-	char* temp_3;
-	char* temp_4;
-	char* temp_5;
+	void* a;
+	void* b;
+	void* c;
+	void* d;
+	void* e;
 
-	char* temp_6;
+	a = temp_malloc(10 * sizeof(char));
+	b = temp_malloc(20000 * sizeof(char));
+	c = temp_malloc(300 * sizeof(char));
+	d = temp_malloc(2 * sizeof(char));
+	e = temp_malloc(150 * sizeof(char));
 
-	str = temp_malloc(10 * sizeof(char));
-	for (int i = 0; i < 9; i++)
-		str[i] = 'a' + i;
-	str[9] = '\0';
-
-	temp_1 = temp_malloc(1 * sizeof(char));
-	temp_2 = temp_malloc(30 * sizeof(char));
-	temp_3 = temp_malloc(1 * sizeof(char));
-	temp_4 = temp_malloc(12000 * sizeof(char));
-	temp_5 = temp_malloc(234 * sizeof(char));
-
+	printf("=====================\n");
 	show_alloc_mem();
-	printf("%s\n", str);
+	printf("=====================\n");
 
-	temp_free(str);
-	printf("AFTER temp_free\n");
-	temp_free(temp_1);
-	printf("AFTER temp_free\n");
-	temp_free(temp_2);
-	printf("AFTER temp_free\n");
-	temp_free(temp_3);
-	printf("AFTER temp_free\n");
-	temp_free(temp_4);
-	printf("AFTER temp_free\n");
-	temp_free(temp_5);
-	printf("AFTER temp_free\n");
+	temp_free(a);
+	temp_free(b);
+	temp_free(c);
+	temp_free(d);
+	temp_free(e);
 
-	temp_6 = temp_malloc(24 * sizeof(char));
-
+	printf("=====================\n");
 	show_alloc_mem();
+	printf("=====================\n");
 
-	temp_free(temp_6);
-	printf("AFTER temp_free\n");
+	a = temp_malloc(3000 * sizeof(char));
+	b = temp_malloc(345 * sizeof(char));
+	c = temp_malloc(2000 * sizeof(char));
+	d = temp_malloc(1 * sizeof(char));
+	e = temp_malloc(1 * sizeof(char));
 
+	printf("=====================\n");
 	show_alloc_mem();
+	printf("=====================\n");
+
+	temp_free(b);
+	temp_free(c);
+	temp_free(d);
+
+	printf("=====================\n");
+	show_alloc_mem();
+	printf("=====================\n");
+
+	b = temp_malloc(8 * sizeof(char));
+
+	printf("=====================\n");
+	show_alloc_mem();
+	printf("=====================\n");
+
 	return 0;
 }

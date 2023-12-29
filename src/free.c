@@ -6,6 +6,8 @@ static void release_memory(zone_t* zone)
 		zone->previous->next = zone->next;
 	else
 		heap_g = zone->next;
+	if (zone->next)
+		zone->next->previous = zone->previous;
 	munmap(zone, zone->size + METADATA_ZONE_SIZE);
 }
 
@@ -24,12 +26,7 @@ void temp_free(void* ptr)
 		else
 			zone = (zone_t*)block - 1;
 		zone->free_size += block->size + METADATA_BLOCK_SIZE;
-		if (zone->type == 3)
+		if (zone->free_size == zone->size)
 			release_memory(zone);
-		else
-		{
-			if (zone->free_size == zone->size)
-				release_memory(zone);
-		}
 	}
 }
