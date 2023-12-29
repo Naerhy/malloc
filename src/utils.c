@@ -15,7 +15,7 @@ zone_t* init_zone(int type, size_t size)
 	zone->type = type;
 	zone->size = size - METADATA_ZONE_SIZE;
 	zone->free_size = zone->size;
-	zone->previous = NULL;
+	zone->previous = get_last_zone(heap_g);
 	zone->next = NULL;
 	return zone;
 }
