@@ -1,25 +1,12 @@
 #ifndef LIBFT_MALLOC_H
 #define LIBFT_MALLOC_H
-// TODO check memory alignment
-// TODO rename malloc function to definitive naming
-
-/*
- * align size
- * check if size can fit in free zone
- * otherwise create new zone
- */
 
 // TODO: set const keyword to unmodified variables
-// TODO: remove useless previous variable from structures?
-// TODO: handle errno values in my implementations
+// TODO remove include => use own printf?
 
 #include <sys/mman.h>
-#include <sys/resource.h>
 #include <unistd.h>
-// TODO remove include => use own printf?
 #include <stdio.h>
-
-typedef struct rlimit rlimit_t;
 
 typedef struct zone_s
 {
@@ -61,7 +48,5 @@ zone_t* get_last_zone(zone_t* zone);
 block_t* get_first_block(block_t* block);
 block_t* get_last_block(block_t* block);
 void* cst_memcpy(void* dest, void const* src, size_t n);
-// size_t get_heap_size(void);
-// size_t get_total_size(void);
 
 #endif
