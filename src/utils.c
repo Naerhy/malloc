@@ -66,7 +66,7 @@ block_t* first_fit(size_t size, int type)
 	return NULL;
 }
 
-size_t get_remaining_space(zone_t* zone)
+size_t get_remaining_space(zone_t const* zone)
 {
 	block_t* last_block;
 	char* start;
