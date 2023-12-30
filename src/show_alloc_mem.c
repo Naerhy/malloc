@@ -8,11 +8,18 @@ void show_alloc_mem(void)
 	zone = heap_g;
 	while (zone)
 	{
-		printf("%s : %p\n", (zone->type == 1) ? "TINY" : (zone->type == 2) ? "SMALL" : "LARGE", zone + 1);
+		write_str((zone->type == 1) ? "TINY : " : (zone->type == 2) ? "SMALL : " : "LARGE : ");
+		write_ptr((unsigned long)(zone + 1));
+		write_str("\n");
 		block = (block_t*)(zone + 1);
 		while (block)
 		{
-			printf("%p - %p : %zu bytes\n", block + 1, (char*)(block + 1) + block->size, block->size);
+			write_ptr((unsigned long)(block + 1));
+			write_str(" - ");
+			write_ptr((unsigned long)((char*)(block + 1) + block->size));
+			write_str(" : ");
+			write_nb(block->size);
+			write_str(" bytes\n");
 			block = block->next;
 		}
 		zone = zone->next;

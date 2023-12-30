@@ -1,11 +1,10 @@
 #ifndef LIBFT_MALLOC_H
 #define LIBFT_MALLOC_H
 
-// TODO remove include => use own printf?
+// TODO: add total bytes allocated to show_alloc_mem()
 
 #include <sys/mman.h>
 #include <unistd.h>
-#include <stdio.h>
 
 typedef struct zone_s
 {
@@ -47,5 +46,8 @@ zone_t* get_last_zone(zone_t* zone);
 block_t* get_first_block(block_t* block);
 block_t* get_last_block(block_t* block);
 void* cst_memcpy(void* dest, void const* src, size_t n);
+void write_str(char const* str);
+void write_nb(size_t nb);
+void write_ptr(unsigned long nb);
 
 #endif

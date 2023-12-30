@@ -116,3 +116,57 @@ void* cst_memcpy(void* dest, void const* src, size_t n)
 		*(udest + i) = *(usrc + i);
 	return dest;
 }
+
+static size_t cst_strlen(char const* str)
+{
+	size_t length;
+
+	length = 0;
+	while (*(str + length))
+		length++;
+	return length;
+}
+
+static void write_char(int c)
+{
+	write(STDOUT_FILENO, &c, 1);
+}
+
+void write_str(char const* str)
+{
+	write(STDOUT_FILENO, str, cst_strlen(str));
+}
+
+static int get_nb_digits(unsigned long nb, unsigned int base)
+{
+	int nb_digits;
+
+	nb_digits = 1;
+	while (nb > base - 1)
+	{
+		nb /= base;
+		nb_digits++;
+	}
+	return nb_digits;
+}
+
+void write_nb(size_t nb)
+{
+	if (nb > 9)
+		write_nb(nb / 10);
+	write_char('0' + nb % 10);
+}
+
+void write_ptr(unsigned long nb)
+{
+	int nb_digits;
+	int digit;
+
+	write_str("0x");
+	nb_digits = get_nb_digits(nb, 16);
+	for (int i = nb_digits - 1; i >= 0; i--)
+	{
+		digit = (nb >> (i * 4)) & 0xF;
+		write_char(digit < 10 ? '0' + digit : 'a' + (digit - 10));
+	}
+}
