@@ -105,6 +105,25 @@ block_t* get_last_block(block_t* block)
 	return block;
 }
 
+size_t get_total_size(zone_t* zone)
+{
+	block_t* block;
+	size_t total;
+
+	total = 0;
+	while (zone)
+	{
+		block = (block_t*)(zone + 1);
+		while (block)
+		{
+			total += block->size;
+			block = block->next;
+		}
+		zone = zone->next;
+	}
+	return total;
+}
+
 void* cst_memcpy(void* dest, void const* src, size_t n)
 {
 	unsigned char* udest;

@@ -1,8 +1,6 @@
 #ifndef LIBFT_MALLOC_H
 #define LIBFT_MALLOC_H
 
-// TODO: add total bytes allocated to show_alloc_mem()
-
 #include <sys/mman.h>
 #include <unistd.h>
 
@@ -45,6 +43,7 @@ size_t get_remaining_space(zone_t const* zone);
 zone_t* get_last_zone(zone_t* zone);
 block_t* get_first_block(block_t* block);
 block_t* get_last_block(block_t* block);
+size_t get_total_size(zone_t* zone);
 void* cst_memcpy(void* dest, void const* src, size_t n);
 void write_str(char const* str);
 void write_nb(size_t nb);

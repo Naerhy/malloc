@@ -24,4 +24,7 @@ void show_alloc_mem(void)
 		}
 		zone = zone->next;
 	}
+	write_str("Total : ");
+	write_nb(get_total_size(heap_g));
+	write_str(" bytes\n");
 }
