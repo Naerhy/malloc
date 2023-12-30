@@ -12,7 +12,7 @@ static void release_memory(zone_t* zone)
 }
 
 // TODO: check if safe to free a block which is already is_free = 1
-void temp_free(void* ptr)
+void free(void* ptr)
 {
 	block_t* block;
 	zone_t* zone;

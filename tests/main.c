@@ -9,69 +9,77 @@ int main(void)
 	void* d;
 	void* e;
 
-	a = temp_malloc(10 * sizeof(char));
-	b = temp_malloc(20000 * sizeof(char));
-	c = temp_malloc(300 * sizeof(char));
-	d = temp_malloc(2 * sizeof(char));
-	e = temp_malloc(150 * sizeof(char));
+	a = malloc(10 * sizeof(char));
+	b = malloc(20000 * sizeof(char));
+	c = malloc(300 * sizeof(char));
+	d = malloc(2 * sizeof(char));
+	e = malloc(150 * sizeof(char));
 
 	printf("=====================\n");
 	show_alloc_mem();
 	printf("=====================\n");
 
-	temp_free(a);
-	temp_free(b);
-	temp_free(c);
-	temp_free(d);
-	temp_free(e);
+	free(a);
+	free(b);
+	free(c);
+	free(d);
+	free(e);
 
 	printf("=====================\n");
 	show_alloc_mem();
 	printf("=====================\n");
 
-	a = temp_malloc(3000 * sizeof(char));
-	b = temp_malloc(345 * sizeof(char));
-	c = temp_malloc(2000 * sizeof(char));
-	d = temp_malloc(1 * sizeof(char));
-	e = temp_malloc(1 * sizeof(char));
+	a = malloc(3000 * sizeof(char));
+	b = malloc(345 * sizeof(char));
+	c = malloc(2000 * sizeof(char));
+	d = malloc(1 * sizeof(char));
+	e = malloc(1 * sizeof(char));
 
 	printf("=====================\n");
 	show_alloc_mem();
 	printf("=====================\n");
 
-	temp_free(b);
-	temp_free(c);
-	temp_free(d);
+	free(b);
+	free(c);
+	free(d);
 
 	printf("=====================\n");
 	show_alloc_mem();
 	printf("=====================\n");
 
-	b = temp_malloc(8 * sizeof(char));
+	b = malloc(8 * sizeof(char));
 
 	printf("=====================\n");
 	show_alloc_mem();
 	printf("=====================\n");
 
-	temp_realloc(a, 0);
-	temp_realloc(b, 0);
-	temp_realloc(e, 0);
+	// REMOVE VARIABLES ASSIGNEMENT
+	a = realloc(a, 0);
+	b = realloc(b, 0);
+	c = realloc(e, 0);
 
 	printf("=====================\n");
 	show_alloc_mem();
 	printf("=====================\n");
 
-	a = temp_realloc(NULL, 120);
-	b = temp_realloc(NULL, 4500);
-	c = temp_realloc(NULL, 80);
+	a = realloc(NULL, 120);
+	b = realloc(NULL, 4500);
+	c = realloc(NULL, 80);
 
 	printf("=====================\n");
 	show_alloc_mem();
 	printf("=====================\n");
 
-	temp_free(a);
-	temp_free(b);
-	temp_realloc(NULL, 110);
+	free(a);
+	free(b);
+	e = realloc(NULL, 110);
+
+	printf("=====================\n");
+	show_alloc_mem();
+	printf("=====================\n");
+
+	e = realloc(e, 3456);
+	e = realloc(e, 0);
 
 	printf("=====================\n");
 	show_alloc_mem();

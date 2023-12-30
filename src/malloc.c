@@ -17,7 +17,7 @@ static zone_t* alloc_zone(int type, size_t zone_size, size_t block_size)
 	return new_zone;
 }
 
-void* temp_malloc(size_t size)
+void* malloc(size_t size)
 {
 	zone_t* new_zone;
 	block_t* existing_block;
