@@ -7,6 +7,8 @@ static zone_t* alloc_zone(int type, size_t zone_size, size_t block_size)
 {
 	zone_t* new_zone;
 
+	if (!check_max_zones())
+		return NULL;
 	new_zone = init_zone(type, zone_size);
 	if (!new_zone)
 		return NULL;
@@ -25,6 +27,8 @@ void* malloc(size_t size)
 	int type;
 
 	if (!size)
+		return NULL;
+	if (!check_max_size(size))
 		return NULL;
 	size = get_next_mult(size, 8);
 	pthread_mutex_lock(&mutex_g);
