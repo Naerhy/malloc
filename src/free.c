@@ -19,6 +19,7 @@ void free(void* ptr)
 
 	if (ptr)
 	{
+		pthread_mutex_lock(&mutex_g);
 		block = (block_t*)ptr - 1;
 		block->is_free = 1;
 		if (block->previous)
@@ -28,5 +29,6 @@ void free(void* ptr)
 		zone->free_size += block->size + METADATA_BLOCK_SIZE;
 		if (zone->free_size == zone->size)
 			release_memory(zone);
+		pthread_mutex_unlock(&mutex_g);
 	}
 }

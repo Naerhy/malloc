@@ -1,6 +1,7 @@
 #include "libft_malloc.h"
 
 void* heap_g = NULL;
+pthread_mutex_t mutex_g = PTHREAD_MUTEX_INITIALIZER;
 
 static zone_t* alloc_zone(int type, size_t zone_size, size_t block_size)
 {
@@ -26,9 +27,11 @@ void* malloc(size_t size)
 	if (!size)
 		return NULL;
 	size = get_next_mult(size, 8);
+	pthread_mutex_lock(&mutex_g);
 	if (size > SMALL_BLOCK_MAXSIZE)
 	{
 		new_zone = alloc_zone(3, size + METADATA_ZONE_SIZE + METADATA_BLOCK_SIZE, size);
+		pthread_mutex_unlock(&mutex_g);
 		return (!new_zone) ? NULL : (void*)((block_t*)(new_zone + 1) + 1);
 	}
 	else
@@ -36,10 +39,14 @@ void* malloc(size_t size)
 		type = (size <= TINY_BLOCK_MAXSIZE) ? 1 : 2;
 		existing_block = first_fit(size, type);
 		if (existing_block)
+		{
+			pthread_mutex_unlock(&mutex_g);
 			return (void*)(existing_block + 1);
+		}
 		else
 		{
 			new_zone = alloc_zone(type, (type == 1) ? TINY_ZONE_SIZE : SMALL_ZONE_SIZE, size);
+			pthread_mutex_unlock(&mutex_g);
 			return (!new_zone) ? NULL : (void*)((block_t*)(new_zone + 1) + 1);
 		}
 	}

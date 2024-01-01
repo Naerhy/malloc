@@ -3,6 +3,7 @@
 
 #include <sys/mman.h>
 #include <unistd.h>
+#include <pthread.h>
 
 typedef struct zone_s
 {
@@ -29,6 +30,7 @@ typedef struct block_s
 #define SMALL_BLOCK_MAXSIZE ((SMALL_ZONE_SIZE - METADATA_ZONE_SIZE - (METADATA_BLOCK_SIZE * 100)) / 100)
 
 extern void* heap_g;
+extern pthread_mutex_t mutex_g;
 
 void* malloc(size_t size);
 void* realloc(void* ptr, size_t size);
