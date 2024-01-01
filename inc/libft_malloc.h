@@ -34,6 +34,7 @@ void* malloc(size_t size);
 void* realloc(void* ptr, size_t size);
 void free(void* ptr);
 void show_alloc_mem(void);
+void show_alloc_mem_ex(void);
 
 size_t get_next_mult(size_t x, size_t mult);
 zone_t* init_zone(int type, size_t size);
@@ -47,6 +48,6 @@ size_t get_total_size(zone_t* zone);
 void* cst_memcpy(void* dest, void const* src, size_t n);
 void write_str(char const* str);
 void write_nb(size_t nb);
-void write_ptr(unsigned long nb);
+void write_hex(unsigned long nb, int is_address);
 
 #endif

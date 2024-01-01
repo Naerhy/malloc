@@ -176,13 +176,16 @@ void write_nb(size_t nb)
 	write_char('0' + nb % 10);
 }
 
-void write_ptr(unsigned long nb)
+void write_hex(unsigned long nb, int is_address)
 {
 	int nb_digits;
 	int digit;
 
-	write_str("0x");
+	if (is_address)
+		write_str("0x");
 	nb_digits = get_nb_digits(nb, 16);
+	if (!is_address && nb_digits == 1)
+		write_char('0');
 	for (int i = nb_digits - 1; i >= 0; i--)
 	{
 		digit = (nb >> (i * 4)) & 0xF;

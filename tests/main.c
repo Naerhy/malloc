@@ -56,7 +56,6 @@ int main(void)
 	show_alloc_mem();
 	write(1, "====================\n", 21);
 
-	// REMOVE VARIABLES ASSIGNEMENT
 	a = realloc(a, 0);
 	b = realloc(b, 0);
 	c = realloc(e, 0);
@@ -75,17 +74,26 @@ int main(void)
 
 	free(a);
 	free(b);
-	e = realloc(NULL, 110);
+	free(c);
 
 	write(1, "====================\n", 21);
 	show_alloc_mem();
 	write(1, "====================\n", 21);
 
-	e = realloc(e, 3456);
-	e = realloc(e, 0);
+	a = malloc(15 * sizeof(char));
 
 	write(1, "====================\n", 21);
 	show_alloc_mem();
+	write(1, "====================\n", 21);
+	show_alloc_mem_ex();
+	write(1, "====================\n", 21);
+
+	char* tt = a;
+	for (int i = 0; i < 4; i++)
+		tt[i] = 13 + i * 2;
+
+	write(1, "====================\n", 21);
+	show_alloc_mem_ex();
 	write(1, "====================\n", 21);
 
 	return 0;
