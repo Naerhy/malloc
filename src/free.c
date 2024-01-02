@@ -39,13 +39,13 @@ void free(void* ptr)
 {
 	block_t* block;
 	zone_t* zone;
+
 	if (ptr && valid_ptr(ptr))
 	{
 		pthread_mutex_lock(&mutex_g);
 		block = (block_t*)ptr - 1;
 		block->is_free = 1;
-		if (check_fill_block())
-			fill_block(block);
+		fill_block(block);
 		if (block->previous)
 			zone = (zone_t*)get_first_block(block) - 1;
 		else

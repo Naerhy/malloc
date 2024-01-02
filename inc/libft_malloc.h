@@ -1,7 +1,7 @@
 #ifndef LIBFT_MALLOC_H
 #define LIBFT_MALLOC_H
 
-// TODO: check_fill_block => direct inside fill_block = 1 function only
+// TODO: check if align to 8 or 16 bytes
 
 #include <sys/mman.h>
 #include <unistd.h>
@@ -46,9 +46,9 @@ zone_t* init_zone(int type, size_t size);
 void init_block(zone_t* zone, block_t* block, size_t size, block_t* previous_block);
 block_t* first_fit(size_t size, int type);
 int valid_ptr(void* ptr);
+int valid_number(char const* str);
 int check_max_zones(void);
 int check_max_size(size_t size);
-int check_fill_block(void);
 void fill_block(block_t* block);
 
 zone_t* get_last_zone(zone_t* zone);
