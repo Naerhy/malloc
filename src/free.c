@@ -39,8 +39,7 @@ void free(void* ptr)
 {
 	block_t* block;
 	zone_t* zone;
-
-	if (ptr)
+	if (ptr && valid_ptr(ptr))
 	{
 		pthread_mutex_lock(&mutex_g);
 		block = (block_t*)ptr - 1;

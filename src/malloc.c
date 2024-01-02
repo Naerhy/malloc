@@ -30,13 +30,13 @@ void* malloc(size_t size)
 		return NULL;
 	if (!check_max_size(size))
 		return NULL;
-	size = get_next_mult(size, 8);
+	size = align_size(size, 8);
 	pthread_mutex_lock(&mutex_g);
 	if (size > SMALL_BLOCK_MAXSIZE)
 	{
 		new_zone = alloc_zone(3, size + METADATA_ZONE_SIZE + METADATA_BLOCK_SIZE, size);
 		pthread_mutex_unlock(&mutex_g);
-		return (!new_zone) ? NULL : (void*)((block_t*)(new_zone + 1) + 1);
+		return (new_zone) ? (void*)((block_t*)(new_zone + 1) + 1) : NULL;
 	}
 	else
 	{
@@ -51,7 +51,7 @@ void* malloc(size_t size)
 		{
 			new_zone = alloc_zone(type, (type == 1) ? TINY_ZONE_SIZE : SMALL_ZONE_SIZE, size);
 			pthread_mutex_unlock(&mutex_g);
-			return (!new_zone) ? NULL : (void*)((block_t*)(new_zone + 1) + 1);
+			return (new_zone) ? (void*)((block_t*)(new_zone + 1) + 1) : NULL;
 		}
 	}
 }

@@ -1,8 +1,8 @@
 #include "libft_malloc.h"
 
-size_t get_next_mult(size_t x, size_t mult)
+size_t align_size(size_t x, size_t align)
 {
-	return (x - 1) / mult * mult + mult;
+	return (x - 1) / align * align + align;
 }
 
 zone_t* init_zone(int type, size_t size)
@@ -70,122 +70,24 @@ block_t* first_fit(size_t size, int type)
 	return NULL;
 }
 
-size_t get_remaining_space(zone_t const* zone)
+int valid_ptr(void* ptr)
 {
-	block_t* last_block;
-	char* start;
-	char* end;
-
-	last_block = get_last_block((block_t*)(zone + 1));
-	start = (char*)(last_block + 1) + last_block->size;
-	end = (char*)(zone + 1) + zone->size;
-	return end - start;
-}
-
-zone_t* get_last_zone(zone_t* zone)
-{
-	if (!zone)
-		return NULL;
-	while (zone->next)
-		zone = zone->next;
-	return zone;
-}
-
-block_t* get_first_block(block_t* block)
-{
-	if (!block)
-		return NULL;
-	while (block->previous)
-		block = block->previous;
-	return block;
-}
-
-block_t* get_last_block(block_t* block)
-{
-	if (!block)
-		return NULL;
-	while (block->next)
-		block = block->next;
-	return block;
-}
-
-size_t get_total_size(zone_t* zone)
-{
+	zone_t* zone;
 	block_t* block;
-	size_t total;
 
-	total = 0;
+	zone = heap_g;
 	while (zone)
 	{
 		block = (block_t*)(zone + 1);
 		while (block)
 		{
-			total += block->size;
+			if (ptr == block + 1)
+				return 1;
 			block = block->next;
 		}
 		zone = zone->next;
 	}
-	return total;
-}
-
-size_t get_nb_zones(zone_t* zone)
-{
-	size_t nb;
-
-	nb = 0;
-	while (zone)
-	{
-		nb++;
-		zone = zone->next;
-	}
-	return nb;
-}
-
-static void write_char(int c)
-{
-	write(STDOUT_FILENO, &c, 1);
-}
-
-void write_str(char const* str)
-{
-	write(STDOUT_FILENO, str, cst_strlen(str));
-}
-
-static int get_nb_digits(unsigned long nb, unsigned int base)
-{
-	int nb_digits;
-
-	nb_digits = 1;
-	while (nb > base - 1)
-	{
-		nb /= base;
-		nb_digits++;
-	}
-	return nb_digits;
-}
-
-void write_nb(size_t nb)
-{
-	if (nb > 9)
-		write_nb(nb / 10);
-	write_char('0' + nb % 10);
-}
-
-void write_hex(unsigned long nb, int is_address)
-{
-	int nb_digits;
-	int digit;
-
-	if (is_address)
-		write_str("0x");
-	nb_digits = get_nb_digits(nb, 16);
-	if (!is_address && nb_digits == 1)
-		write_char('0');
-	for (int i = nb_digits - 1; i >= 0; i--)
-	{
-		digit = (nb >> (i * 4)) & 0xF;
-		write_char(digit < 10 ? '0' + digit : 'a' + (digit - 10));
-	}
+	return 0;
 }
 
 int check_max_zones(void)
