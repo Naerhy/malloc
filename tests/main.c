@@ -18,6 +18,12 @@ int main(void)
 	d = malloc(2 * sizeof(char));
 	e = malloc(150 * sizeof(char));
 
+	if (!a || !b || !c || !d || !e)
+	{
+		write(STDOUT_FILENO, "ERROR\n", 6);
+		return 1;
+	}
+
 	write(1, "====================\n", 21);
 	show_alloc_mem();
 	write(1, "====================\n", 21);
@@ -96,5 +102,20 @@ int main(void)
 	show_alloc_mem_ex();
 	write(1, "====================\n", 21);
 
+	free(tt);
+	a = malloc(sizeof(char) * 8);
+	b = malloc(sizeof(char) * 8);
+	c = malloc(sizeof(char) * 8);
+
+	write(1, "====================\n", 21);
+	show_alloc_mem();
+	write(1, "====================\n", 21);
+
+	free(a);
+	free(b);
+
+	write(1, "====================\n", 21);
+	show_alloc_mem();
+	write(1, "====================\n", 21);
 	return 0;
 }
