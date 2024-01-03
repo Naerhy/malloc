@@ -46,11 +46,11 @@ block_t* first_fit(size_t size, int type)
 			block = (block_t*)(zone + 1);
 			while (block)
 			{
-				if (block->is_free && block->size >= size)
+				if (block->is_free && size <= block->size)
 				{
 					block->is_free = 0;
 					fill_block(block);
-					zone->free_size -= size + METADATA_BLOCK_SIZE;
+					zone->free_size -= block->size + METADATA_BLOCK_SIZE;
 					return block;
 				}
 				block = block->next;
