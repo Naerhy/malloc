@@ -27,9 +27,9 @@ typedef struct block_s
 
 #define METADATA_ZONE_SIZE sizeof(zone_t)
 #define METADATA_BLOCK_SIZE sizeof(block_t)
-#define TINY_ZONE_SIZE (getpagesize() * 4)
+#define TINY_ZONE_SIZE (getpagesize() * 16)
 #define TINY_BLOCK_MAXSIZE ((TINY_ZONE_SIZE - METADATA_ZONE_SIZE - (METADATA_BLOCK_SIZE * 100)) / 100)
-#define SMALL_ZONE_SIZE (getpagesize() * 16)
+#define SMALL_ZONE_SIZE (getpagesize() * 48)
 #define SMALL_BLOCK_MAXSIZE ((SMALL_ZONE_SIZE - METADATA_ZONE_SIZE - (METADATA_BLOCK_SIZE * 100)) / 100)
 
 extern void* heap_g;
