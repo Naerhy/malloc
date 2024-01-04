@@ -1,8 +1,6 @@
 #ifndef LIBFT_MALLOC_H
 #define LIBFT_MALLOC_H
 
-// TODO: check if align to 8 or 16 bytes
-
 #include <sys/mman.h>
 #include <unistd.h>
 #include <pthread.h>
@@ -15,6 +13,7 @@ typedef struct zone_s
 	size_t free_size;
 	struct zone_s* previous;
 	struct zone_s* next;
+	void* padding;
 } zone_t;
 
 typedef struct block_s

@@ -30,7 +30,7 @@ void* malloc(size_t size)
 		return NULL;
 	if (!check_max_size(size))
 		return NULL;
-	size = align_size(size, 8);
+	size = align_size(size, 16);
 	pthread_mutex_lock(&mutex_g);
 	if (size > SMALL_BLOCK_MAXSIZE)
 	{
