@@ -44,6 +44,8 @@ zone_t* init_zone(int type, size_t size);
 void init_block(zone_t* zone, block_t* block, size_t size, block_t* previous_block);
 void* alloc_available_space(zone_t* zone, size_t size, int type);
 int valid_ptr(zone_t* zone, void* ptr);
+int check_max_zones(void);
+int check_max_size(size_t size);
 
 zone_t* get_last_zone(zone_t* zone);
 block_t* get_first_block(block_t* block);
@@ -51,7 +53,7 @@ block_t* get_last_block(block_t* block);
 size_t get_available_space(zone_t const* zone);
 size_t get_total_size(zone_t* zone);
 
-int cst_atoi(char const* str);
+size_t cst_atoi(char const* str);
 void* cst_memcpy(void* dest, void const* src, size_t n);
 size_t cst_strlen(char const* str);
 

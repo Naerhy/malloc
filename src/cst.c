@@ -1,6 +1,6 @@
 #include "libft_malloc.h"
 
-int cst_atoi(char const* str)
+size_t cst_atoi(char const* str)
 {
 	int result;
 

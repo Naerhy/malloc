@@ -83,3 +83,60 @@ int valid_ptr(zone_t* zone, void* ptr)
 	}
 	return 0;
 }
+
+static int valid_number(char const* str)
+{
+	if (!cst_strlen(str))
+		return 0;
+	for (size_t i = 0; *(str + i); i++)
+	{
+		if (*(str + i) < '0' || *(str + i) > '9')
+			return 0;
+	}
+	return 1;
+}
+
+static size_t count_zones(zone_t* zone)
+{
+	size_t count;
+
+	count = 0;
+	while (zone)
+	{
+		count++;
+		zone = zone->next;
+	}
+	return count;
+}
+
+int check_max_zones(void)
+{
+	char* env;
+	size_t max_zones;
+	size_t nb_zones;
+
+	env = getenv("FT_MALLOC_MAX_ZONES");
+	if (env && valid_number(env))
+	{
+		max_zones = cst_atoi(env);
+		nb_zones = count_zones(heap_g);
+		if (max_zones == nb_zones)
+			return 0;
+	}
+	return 1;
+}
+
+int check_max_size(size_t size)
+{
+	char* env;
+	size_t max_size;
+
+	env = getenv("FT_MALLOC_MAX_SIZE");
+	if (env && valid_number(env))
+	{
+		max_size = cst_atoi(env);
+		if (size > max_size)
+			return 0;
+	}
+	return 1;
+}

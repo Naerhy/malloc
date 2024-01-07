@@ -33,6 +33,8 @@ static void* alloc_new_zone(int type, size_t zone_size, size_t block_size)
 	zone_t* new_zone;
 	block_t* new_block;
 
+	if (!check_max_zones())
+		return NULL;
 	new_zone = init_zone(type, zone_size);
 	if (!new_zone)
 		return NULL;
@@ -47,11 +49,11 @@ void* malloc(size_t size)
 	void* available_space;
 	int type;
 
-	pthread_mutex_lock(&mutex_g);
-	if (!size)
+	if (!size || !check_max_size(size))
 		return NULL;
 	size = align_size(size, 16);
 	type = get_type_size(size);
+	pthread_mutex_lock(&mutex_g);
 	available_space = alloc_available_space(heap_g, size + METADATA_BLOCK_SIZE, type);
 	if (available_space)
 	{
