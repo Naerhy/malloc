@@ -13,12 +13,12 @@ void* realloc(void* ptr, size_t size)
 		return NULL;
 	}
 	old_size = ((block_t*)ptr - 1)->size - METADATA_BLOCK_SIZE;
-	if (size <= old_size)
+	if (size == old_size)
 		return ptr;
 	new_alloc = malloc(size);
 	if (!new_alloc)
 		return NULL;
-	cst_memcpy(new_alloc, ptr, old_size);
+	cst_memcpy(new_alloc, ptr, size < old_size ? size : old_size);
 	free(ptr);
 	return new_alloc;
 }
