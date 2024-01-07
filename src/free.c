@@ -13,8 +13,8 @@ static void try_merge_blocks(block_t* first, block_t* second, int type)
 
 	if (first && second && first->is_free && second->is_free)
 	{
-		combined_size = first->size + second->size + METADATA_BLOCK_SIZE;
-		if (enough_size(combined_size, type))
+		combined_size = first->size + second->size;
+		if (enough_size(combined_size - METADATA_BLOCK_SIZE, type))
 		{
 			first->size = combined_size;
 			first->next = second->next;
@@ -32,7 +32,21 @@ static void release_memory(zone_t* zone)
 		heap_g = zone->next;
 	if (zone->next)
 		zone->next->previous = zone->previous;
-	munmap(zone, zone->size + METADATA_ZONE_SIZE);
+	munmap(zone, zone->size);
+}
+
+static size_t get_nb_zones(zone_t* zone, int type)
+{
+	size_t count;
+
+	count = 0;
+	while (zone)
+	{
+		if (zone->type == type)
+			count++;
+		zone = zone->next;
+	}
+	return count;
 }
 
 void free(void* ptr)
@@ -40,21 +54,17 @@ void free(void* ptr)
 	block_t* block;
 	zone_t* zone;
 
-	if (ptr && valid_ptr(ptr))
+	pthread_mutex_lock(&mutex_g);
+	if (ptr && valid_ptr(heap_g, ptr))
 	{
-		pthread_mutex_lock(&mutex_g);
 		block = (block_t*)ptr - 1;
 		block->is_free = 1;
-		fill_block(block);
-		if (block->previous)
-			zone = (zone_t*)get_first_block(block) - 1;
-		else
-			zone = (zone_t*)block - 1;
-		zone->free_size += block->size + METADATA_BLOCK_SIZE;
+		zone = (zone_t*)(block->previous ? get_first_block(block) : block) - 1;
+		zone->free_size += block->size;
 		try_merge_blocks(block->previous, block, zone->type);
 		try_merge_blocks(block, block->next, zone->type);
-		if (zone->free_size == zone->size)
+		if (zone->free_size == zone->size - METADATA_ZONE_SIZE && get_nb_zones(heap_g, zone->type) > 1)
 			release_memory(zone);
-		pthread_mutex_unlock(&mutex_g);
 	}
+	pthread_mutex_unlock(&mutex_g);
 }

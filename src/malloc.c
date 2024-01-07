@@ -1,57 +1,64 @@
 #include "libft_malloc.h"
 
-void* heap_g = NULL;
+zone_t* heap_g = NULL;
 pthread_mutex_t mutex_g = PTHREAD_MUTEX_INITIALIZER;
 
-static zone_t* alloc_zone(int type, size_t zone_size, size_t block_size)
+static size_t align_size(size_t x, size_t align)
+{
+	return (x - 1) / align * align + align;
+}
+
+static int get_type_size(size_t size)
+{
+	if (size <= TINY_BLOCK_MAXSIZE)
+		return 1;
+	else if (size <= SMALL_BLOCK_MAXSIZE)
+		return 2;
+	else
+		return 3;
+}
+
+static size_t get_zone_size_alloc(int type, size_t size)
+{
+	if (type == 1)
+		return TINY_ZONE_SIZE;
+	else if (type == 2)
+		return SMALL_ZONE_SIZE;
+	else
+		return align_size(size + METADATA_ZONE_SIZE + METADATA_BLOCK_SIZE, 4096);
+}
+
+static void* alloc_new_zone(int type, size_t zone_size, size_t block_size)
 {
 	zone_t* new_zone;
+	block_t* new_block;
 
-	if (!check_max_zones())
-		return NULL;
 	new_zone = init_zone(type, zone_size);
 	if (!new_zone)
 		return NULL;
-	init_block(new_zone, (block_t*)(new_zone + 1), block_size, NULL);
-	if (!heap_g)
-		heap_g = (void*)new_zone;
-	else
-		(get_last_zone(heap_g))->next = new_zone;
-	return new_zone;
+	new_block = (block_t*)(new_zone + 1);
+	init_block(new_zone, new_block, block_size, NULL);
+	return (void*)(new_block + 1);
 }
 
 void* malloc(size_t size)
 {
-	zone_t* new_zone;
-	block_t* existing_block;
+	void* new_zone;
+	void* available_space;
 	int type;
 
+	pthread_mutex_lock(&mutex_g);
 	if (!size)
 		return NULL;
-	if (!check_max_size(size))
-		return NULL;
 	size = align_size(size, 16);
-	pthread_mutex_lock(&mutex_g);
-	if (size > SMALL_BLOCK_MAXSIZE)
+	type = get_type_size(size);
+	available_space = alloc_available_space(heap_g, size + METADATA_BLOCK_SIZE, type);
+	if (available_space)
 	{
-		new_zone = alloc_zone(3, size + METADATA_ZONE_SIZE + METADATA_BLOCK_SIZE, size);
 		pthread_mutex_unlock(&mutex_g);
-		return (new_zone) ? (void*)((block_t*)(new_zone + 1) + 1) : NULL;
+		return available_space;
 	}
-	else
-	{
-		type = (size <= TINY_BLOCK_MAXSIZE) ? 1 : 2;
-		existing_block = first_fit(size, type);
-		if (existing_block)
-		{
-			pthread_mutex_unlock(&mutex_g);
-			return (void*)(existing_block + 1);
-		}
-		else
-		{
-			new_zone = alloc_zone(type, (type == 1) ? TINY_ZONE_SIZE : SMALL_ZONE_SIZE, size);
-			pthread_mutex_unlock(&mutex_g);
-			return (new_zone) ? (void*)((block_t*)(new_zone + 1) + 1) : NULL;
-		}
-	}
+	new_zone = alloc_new_zone(type, get_zone_size_alloc(type, size), size + METADATA_BLOCK_SIZE);
+	pthread_mutex_unlock(&mutex_g);
+	return new_zone;
 }

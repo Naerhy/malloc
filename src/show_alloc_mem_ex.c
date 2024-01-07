@@ -7,6 +7,7 @@ void show_alloc_mem_ex(void)
 	unsigned char* start;
 	unsigned char* end;
 
+	pthread_mutex_lock(&mutex_g);
 	zone = heap_g;
 	while (zone)
 	{
@@ -14,22 +15,16 @@ void show_alloc_mem_ex(void)
 		while (block)
 		{
 			start = (unsigned char*)(block + 1);
-			end = start + block->size;
+			end = (unsigned char*)block + block->size;
 			for (int i = 0; start + i < end; i += 8)
 			{
-				write_hex((unsigned long)(start + i), 1);
-				write_str("  ");
+				write_hex(NULL, (unsigned long)(start + i), 1, "  ");
 				for (int j = 0; j < 8; j++)
-				{
-					write_hex(*(start + i + j), 0);
-					if (j != 7)
-						write_str(" ");
-					else
-						write_str("\n");
-				}
+					write_hex(NULL, *(start + i + j), 0, j != 7 ? " " : "\n");
 			}
 			block = block->next;
 		}
 		zone = zone->next;
 	}
+	pthread_mutex_unlock(&mutex_g);
 }

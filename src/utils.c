@@ -1,10 +1,5 @@
 #include "libft_malloc.h"
 
-size_t align_size(size_t x, size_t align)
-{
-	return (x - 1) / align * align + align;
-}
-
 zone_t* init_zone(int type, size_t size)
 {
 	zone_t* zone;
@@ -13,9 +8,13 @@ zone_t* init_zone(int type, size_t size)
 	if (zone == MAP_FAILED)
 		return NULL;
 	zone->type = type;
-	zone->size = size - METADATA_ZONE_SIZE;
-	zone->free_size = zone->size;
+	zone->size = size;
+	zone->free_size = zone->size - METADATA_ZONE_SIZE;
 	zone->previous = get_last_zone(heap_g);
+	if (zone->previous)
+		zone->previous->next = zone;
+	else
+		heap_g = zone;
 	zone->next = NULL;
 	return zone;
 }
@@ -24,24 +23,24 @@ void init_block(zone_t* zone, block_t* block, size_t size, block_t* previous)
 {
 	block->size = size;
 	block->is_free = 0;
-	fill_block(block);
 	block->previous = previous;
-	block->next = NULL;
-	if (previous)
+	if (block->previous)
 		previous->next = block;
-	zone->free_size -= size + METADATA_BLOCK_SIZE;
+	block->next = NULL;
+	zone->free_size -= block->size;
 }
 
-block_t* first_fit(size_t size, int type)
+void* alloc_available_space(zone_t* zone, size_t size, int type)
 {
-	zone_t* zone;
 	block_t* block;
 	block_t* last_block;
+	block_t* new_block;
 
-	zone = heap_g;
+	if (type == 3)
+		return NULL;
 	while (zone)
 	{
-		if (zone->type == type && zone->free_size >= size + METADATA_BLOCK_SIZE)
+		if (zone->type == type && size <= zone->free_size)
 		{
 			block = (block_t*)(zone + 1);
 			while (block)
@@ -49,18 +48,17 @@ block_t* first_fit(size_t size, int type)
 				if (block->is_free && size <= block->size)
 				{
 					block->is_free = 0;
-					fill_block(block);
-					zone->free_size -= block->size + METADATA_BLOCK_SIZE;
-					return block;
+					zone->free_size -= block->size;
+					return (void*)(block + 1);
 				}
 				block = block->next;
 			}
-			if (get_remaining_space(zone) >= size + METADATA_BLOCK_SIZE)
+			if (size <= get_available_space(zone))
 			{
 				last_block = get_last_block((block_t*)(zone + 1));
-				init_block(zone, (block_t*)((char*)(last_block + 1) + last_block->size),
-						size, last_block);
-				return (block_t*)((char*)(last_block + 1) + last_block->size);
+				new_block = (block_t*)((unsigned char*)last_block + last_block->size);
+				init_block(zone, new_block, size, last_block);
+				return (void*)(new_block + 1);
 			}
 		}
 		zone = zone->next;
@@ -68,12 +66,10 @@ block_t* first_fit(size_t size, int type)
 	return NULL;
 }
 
-int valid_ptr(void* ptr)
+int valid_ptr(zone_t* zone, void* ptr)
 {
-	zone_t* zone;
 	block_t* block;
 
-	zone = heap_g;
 	while (zone)
 	{
 		block = (block_t*)(zone + 1);
@@ -86,62 +82,4 @@ int valid_ptr(void* ptr)
 		zone = zone->next;
 	}
 	return 0;
-}
-
-int valid_number(char const* str)
-{
-	if (!cst_strlen(str))
-		return 0;
-	for (size_t i = 0; *(str + i); i++)
-	{
-		if (*(str + i) < '0' || *(str + i) > '9')
-			return 0;
-	}
-	return 1;
-}
-
-int check_max_zones(void)
-{
-	char* env;
-	int max_zones;
-	size_t nb_zones;
-
-	env = getenv("FT_MALLOC_MAX_ALLOC");
-	if (env && valid_number(env))
-	{
-		max_zones = cst_atoi(env);
-		nb_zones = get_nb_zones(heap_g);
-		if ((size_t)max_zones == nb_zones)
-			return 0;
-	}
-	return 1;
-}
-
-int check_max_size(size_t size)
-{
-	char* env;
-	int max_size;
-
-	env = getenv("FT_MALLOC_MAX_SIZE");
-	if (env && valid_number(env))
-	{
-		max_size = cst_atoi(env);
-		if ((size_t)max_size < size)
-			return 0;
-	}
-	return 1;
-}
-
-void fill_block(block_t* block)
-{
-	char* env;
-	char* start;
-
-	env = getenv("FT_MALLOC_VALUE");
-	if (env && valid_number(env) && cst_atoi(env))
-	{
-		start = (char*)(block + 1);
-		for (size_t i = 0; i < block->size; i++)
-			*(start + i) = 42;
-	}
 }
