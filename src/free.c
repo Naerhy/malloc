@@ -63,8 +63,13 @@ void free(void* ptr)
 		zone->free_size += block->size;
 		try_merge_blocks(block->previous, block, zone->type);
 		try_merge_blocks(block, block->next, zone->type);
-		if (zone->free_size == zone->size - METADATA_ZONE_SIZE && get_nb_zones(heap_g, zone->type) > 1)
-			release_memory(zone);
+		if (zone->free_size == zone->size - METADATA_ZONE_SIZE)
+		{
+			if (zone->type != 3 && get_nb_zones(heap_g, zone->type) == 1)
+				((block_t*)(zone + 1))->next = NULL;
+			else
+				release_memory(zone);
+		}
 	}
 	pthread_mutex_unlock(&mutex_g);
 }
