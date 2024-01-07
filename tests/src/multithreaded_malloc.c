@@ -13,11 +13,22 @@ static void* thread_func(void* arg)
 		usleep(10);
 	}
 
-	/*
+	if (*size == 240)
+	{
+		write_str("\n");
+		show_alloc_mem();
+		write_str("\n");
+	}
+	
 	for (size_t i = 0; i < 30; i++)
 		free(ptr[i]);
-	*/
-	(void)ptr;
+
+	if (*size == 240)
+	{
+		write_str("\n");
+		show_alloc_mem();
+		write_str("\n");
+	}
 
 	return NULL;
 }
@@ -31,10 +42,6 @@ void multithreaded_malloc(void)
 
 	for (size_t i = 0; i < 3; i++)
 		pthread_create(&tid[i], NULL, thread_func, &sizes[i]);
-
-	write_char('\n');
-	show_alloc_mem();
-	write_char('\n');
 
 	for (size_t i = 0; i < 3; i++)
 		pthread_join(tid[i], NULL);

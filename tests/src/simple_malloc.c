@@ -8,6 +8,8 @@ void simple_malloc(void)
 	void* d;
 	void* e;
 	void* f;
+	void* g;
+	void* h;
 
 	write_str("\033[33m===== SIMPLE MALLOC =====\033[00m\n");
 
@@ -16,11 +18,13 @@ void simple_malloc(void)
 	c = malloc(80);
 	d = malloc(234);
 	e = malloc(201);
-	f = malloc(9223372036854772807);
+	f = malloc(1300);
+	g = malloc(1700);
+	h = malloc(9223372036854772807);
 
-	write_char('\n');
+	write_str("\n");
 	show_alloc_mem();
-	write_char('\n');
+	write_str("\n");
 
 	free(a);
 	free(b);
@@ -28,10 +32,12 @@ void simple_malloc(void)
 	free(d);
 	free(e);
 	free(f);
+	free(g);
+	free(h);
 
-	write_char('\n');
+	write_str("\n");
 	show_alloc_mem();
-	write_char('\n');
+	write_str("\n");
 
 	write_str("\033[33m===== SIMPLE MALLOC =====\033[00m\n");
 }
