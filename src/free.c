@@ -1,6 +1,6 @@
 #include "libft_malloc.h"
 
-static int enough_size(size_t size, int type)
+static int check_size_limits(size_t size, int type)
 {
 	if (type == 1)
 		return size <= TINY_BLOCK_MAXSIZE;
@@ -14,7 +14,7 @@ static void try_merge_blocks(block_t* first, block_t* second, int type)
 	if (first && second && first->is_free && second->is_free)
 	{
 		combined_size = first->size + second->size;
-		if (enough_size(combined_size - METADATA_BLOCK_SIZE, type))
+		if (check_size_limits(combined_size - METADATA_BLOCK_SIZE, type))
 		{
 			first->size = combined_size;
 			first->next = second->next;

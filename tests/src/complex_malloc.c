@@ -14,11 +14,9 @@ void complex_malloc(void)
 	show_alloc_mem();
 	write_str("\n");
 
-	/*
 	write_str("\n");
 	show_alloc_mem_ex();
 	write_str("\n");
-	*/
 
 	free(ptr[0]);
 	free(ptr[1]);

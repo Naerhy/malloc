@@ -16,11 +16,11 @@ void show_alloc_mem_ex(void)
 		{
 			start = (unsigned char*)(block + 1);
 			end = (unsigned char*)block + block->size;
-			for (int i = 0; start + i < end; i += 8)
+			for (int i = 0; start + i < end; i += 16)
 			{
 				write_hex(NULL, (unsigned long)(start + i), 1, "  ");
-				for (int j = 0; j < 8; j++)
-					write_hex(NULL, *(start + i + j), 0, j != 7 ? " " : "\n");
+				for (int j = 0; j < 16; j++)
+					write_hex(NULL, *(start + i + j), 0, j != 15 ? " " : "\n");
 			}
 			block = block->next;
 		}
